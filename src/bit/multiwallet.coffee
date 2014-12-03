@@ -7,23 +7,24 @@ PassphraseBox = require "../crypto/passphrase_box"
 
 
 
-class MultiWallet
-
-  getNode = (arg) ->
-    if arg instanceof HDNode
-      arg
-    # still working on this part
-    else if typeof arg == 'string'
-      return "This is not done yet"
+module.exports = class MultiWallet
 
   NETWORKMAP = {
     testnet3: 'testnet',
+    testnet: 'testnet',
     bitcoin_testnet: 'testnet',
     bitcoin: 'bitcoin'
   }
 
+  getNode = (arg) ->
+    if arg instanceof HDNode
+      arg
+    else if typeof arg == 'string'
+      HDNode.fromBase58(arg)
+    else
+      throw Error("Unusable type #{typeof arg}")
 
-  @generate: (names, networkName = 'testnet3') ->
+  @generate: (names, networkName = 'testnet') ->
     unless networkName of NETWORKMAP
       throw Error("Unknown network #{networkName}")
 
@@ -31,6 +32,7 @@ class MultiWallet
     masters = {}
     for name in names
       chainCode = new Buffer(32)
+      chainCode1.fill(1)
       keyPair = ECKey.makeRandom()
       privkey = keyPair.d
       # the bitcoin library requires an object from their
@@ -57,36 +59,10 @@ class MultiWallet
     for name, arg of privateTrees
       @privateTrees[name] = @trees[name] = getNode(arg)
 
-    # FIXME: not sure how to do this yet
-    # if 'public' in options
-    #   for name, arg of options.public
-    #     @publicTrees[name] = @trees[name] = getNode(arg)
+    if 'public' in options
+      for name, arg of options.public
+        @publicTrees[name] = @trees[name] = getNode(arg)
 
 
-module.exports = MultiWallet
-
-# create = (email, passphrase, callback) ->
-#   multiwallet = MultiWallet.generate(['primary', 'backup'])
-#   network = 'bitcoin_testnet'
-#   primarySeed = multiwallet.trees.primary.toBase58()
-#   encryptedSeed = PassphraseBox.encrypt(passphrase, primarySeed)
-#   wallet = {
-#     network,
-#     backup_public_seed: multiwallet.trees.backup.neutered().toBase58()
-#     primary_public_seed: multiwallet.trees.primary.neutered().toBase58()
-#     primary_private_seed: encryptedSeed
-#   }
-
-#   params = {email, wallet}
-#   @resource.create params, (error, userResource) ->
-#     return callback(error) if error
-
-#     return {
-#       multiwallet,
-#       new User(userResource, @client())
-#     }
-
-
-create('bez@gmail.com', 'passphrase')
 
 
