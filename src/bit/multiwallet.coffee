@@ -1,7 +1,9 @@
 
 bitcoin = require "bitcoinjs-lib"
-PassphraseBox = require "../crypto/passphrase_box"
 {HDNode, ECKey} = bitcoin
+PassphraseBox = require "../crypto/passphrase_box"
+crypto = require 'crypto'
+
 
 
 module.exports = class MultiWallet
@@ -28,14 +30,10 @@ module.exports = class MultiWallet
     network = NETWORKMAP[networkName]
     masters = {}
     for name in names
-      chainCode = new Buffer(32)
-      chainCode.fill(1)
-      keyPair = ECKey.makeRandom()
-      privkey = keyPair.d
-      # the bitcoin library requires an object from their
-      # library in order to set the network
+      seed = crypto.randomBytes(32)
       networkDetails = bitcoin.networks[network]
-      masters[name] = new HDNode(privkey, chainCode, networkDetails)
+      node = HDNode.fromSeedBuffer(seed, networkDetails)
+      masters[name] = node
 
     new @({private: masters, network})
 
@@ -59,7 +57,3 @@ module.exports = class MultiWallet
     if 'public' in options
       for name, arg of options.public
         @publicTrees[name] = @trees[name] = getNode(arg)
-
-
-
-
