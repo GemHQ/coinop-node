@@ -4,9 +4,6 @@ PassphraseBox = require "../crypto/passphrase_box"
 {HDNode, ECKey} = bitcoin
 
 
-
-
-
 module.exports = class MultiWallet
 
   NETWORKMAP = {
@@ -32,7 +29,7 @@ module.exports = class MultiWallet
     masters = {}
     for name in names
       chainCode = new Buffer(32)
-      chainCode1.fill(1)
+      chainCode.fill(1)
       keyPair = ECKey.makeRandom()
       privkey = keyPair.d
       # the bitcoin library requires an object from their
@@ -48,9 +45,9 @@ module.exports = class MultiWallet
     @publicTrees = {}
     @trees = {}
     if 'network' of options and options.network of NETWORKMAP
-      @network = options.network
+      @network = NETWORKMAP[options.network]
     else
-      @network ='testnet3'
+      @network = NETWORKMAP['testnet']
 
     privateTrees = options.private
     unless privateTrees?
