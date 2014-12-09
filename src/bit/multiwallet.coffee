@@ -57,3 +57,4 @@ module.exports = class MultiWallet
     if 'public' in options
       for name, arg of options.public
         @publicTrees[name] = @trees[name] = getNode(arg)
+        
