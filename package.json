@@ -9,9 +9,11 @@
   },
   "license": "MIT",
   "dependencies": {
+    "bitcoinjs-lib": "^1.4.1",
     "sodium": "^1.0.13"
   },
   "devDependencies": {
+    "chai": "^1.10.0",
     "js-yaml": "^3.2.2",
     "testify": "^0.2.10"
   }
