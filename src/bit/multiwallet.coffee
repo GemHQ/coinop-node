@@ -54,7 +54,86 @@ module.exports = class MultiWallet
     for name, arg of privateTrees
       @privateTrees[name] = @trees[name] = getNode(arg)
 
-    if 'public' in options
+    if 'public' of options
       for name, arg of options.public
         @publicTrees[name] = @trees[name] = getNode(arg)
-        
+
+
+  addInputs: (inputs, transactionBuilder) ->
+    inputs.forEach (input) ->
+      prevTx = input.output.transaction_hash
+      index = input.output.index
+      ASM = input.output.script.string
+      prevOutScript = bitcoin.Script.fromASM(ASM)
+
+      transactionBuilder.addInput(prevTx, index, undefined, prevOutScript)
+
+
+  addOutputs: (outputs, transactionBuilder) ->
+    outputs.forEach (output) ->
+      ASM = output.script.string
+      scriptPubKey = bitcoin.Script.fromASM(ASM)
+      value = output.value
+
+      transactionBuilder.addOutput(scriptPubKey, value)
+
+
+  # should be a private method
+  # not sure how to test though
+  parsePath: (path) ->
+    parts = path.split('/')
+    # removes "m" from parts
+    indices = parts.slice(1).map (index) ->
+      # converts index to a number
+      +index
+
+
+  # should be a private method
+  # not sure how to test though
+  getPathForInput: (paymentResource, index) ->
+    path = paymentResource.inputs[index].output.metadata.wallet_path
+
+
+  deriveNodeForIndices: (parent, indices) ->
+    node = parent
+
+    indices.forEach (index) ->
+      node = node.derive(index)
+
+    return node
+
+
+  getPubKeysForPath: (path) ->
+    indices = @parsePath(path)
+    trees = trees
+    
+    masterNodes = ['backup', 'cosigner', 'primary'].map (nodeName) =>
+      masterNode = @trees[nodeName]
+      @deriveNodeForIndices(masterNode, indices)
+
+    pubKeys = masterNodes.map (node) ->
+      node.pubKey
+
+
+  getPrivKeyForPath: (path) ->
+    indices = @parsePath(path)
+    primaryMasterNode = @privateTrees.primary
+    primaryChildNode = @deriveNodeForIndices(primaryMasterNode ,indices)
+    privKey = primaryChildNode.privKey
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -3,3 +3,4 @@ module.exports =
     PassphraseBox: require "./crypto/passphrase_box"
   bit:
     MultiWallet: require "./bit/multiwallet"
+    Transaction: require "./bit/transaction"

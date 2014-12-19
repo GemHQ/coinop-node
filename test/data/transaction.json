@@ -1,0 +1,83 @@
+
+{
+  "base58_seeds": {
+    "backup": "tpubD6NzVbkrYhZ4WMWvaEt65AYVU8j4A3XBT3vNYE7qAJA9jPr3foQ1eMhmATpwaCP3Ct7RrKSxttFBTTBiEx55zbQKLuaCmiNNdBRY3byAuhY",
+    "cosigner": "tpubD6NzVbkrYhZ4YFcw3cmsKtpicuTZ5NtL7fGJE4pJRx8M8ENnbpu3jAp6FE7VDpEArMMd19BQCUm2sKbb4VevxYJrqTSCGsNebySnmbStBxF",
+    "primary": "tprv8ZgxMBicQKsPejnGnyVTjmwWEwEjBjUdmrfZ5esxW4JhJ99mesRgYpgs7BSvQ6R1DKRpbXurkEfMtL2TYcXAgUiotbRpXK7Q71QFgpyvS8W"
+  },
+  "base58_derived_seeds": {
+    "backup": "tpubDGtJ1WC5Apc2962KKfhdAYLtiEfPhnH7eFh3VvUYyjdYsXxH67jxk491pD2pQzKhX1kN1yZhNJhvTttxKmpxbrZk7kHRZXiFkdykD7Y4Hd1",
+    "cosigner": "tpubDFqXHqWQbFR3SSEtvFrsJiXf8qHeHHqTPaoS4Rd7yYv8brsWfZB5pmJWANvMpAGjCST17xFDmkunUo6cdEGqNkKZSMoZrhpzhdLaDeeQyJK",
+    "primary": "tprv8kPvHNdGMvELSAjFASJFNwV2KkH1HeKzTL7PHvTWo51JtapNsNk2sB8sruE1FDFCHV7PxjqAxGQ1WgiojM8nDEJF6mx9uEnzi6tut3g9jgf"
+  },
+  "derived_pubkeys_hex": {
+    "backup": "02713f2b21e9026c303edc7a6a421a497d7a3ac76b1c06a0af244b332ca908af2f",
+    "cosigner": "029b71b219b2e3267ade5a6bed1b07e1646fc9bcd1abace41f718851bc8c4a60dd",
+    "primary": "02da1ca905615ede7b997ce05bc162a39f16302132963add975f685e3759710f9e"
+  },
+  "payment_resource": {
+    "key":"bwgC2K7aLKoVeXaaDNHOXQ",
+    "type":"outgoing",
+    "status":"unsigned",
+    "value":-10100,
+    "fee":10000,
+    "created_at":"2014-12-18 01:50:21 +0000",
+    "version":1,
+    "lock_time":0,
+    "hash":"6b1ffcc10501d7f871e24f4f7c266ca6d4b3db2048a750d4b67318c5cdde0af9",
+    "inputs":[
+      {
+        "output":{
+          "transaction_hash":"e422acbc206d8da6ee3c5acfd33d4f258100ab677f80dab8a469678c92bad959",
+          "index":0,
+          "value":5900000,
+          "script":{
+            "type":"script_hash",
+            "string":"OP_HASH160 5b100319fc97514cd8cf1d5f546186e161572ceb OP_EQUAL"
+          },
+          "address":"2N1YifHJD3gqh6crUBv9qeiCqUKPeFNoZ6j",
+          "metadata":{
+            "confirmations":1171,
+            "wallet_path":"m/44/1/0/0/0"
+          }
+        },
+        "signatures":[
+
+        ],
+        "sig_hash":"6aaea963b47f57d24c82f643eb4b7a24bdf6801990ff491b03160916fab9e0e5",
+        "script_sig":""
+      }
+    ],
+    "outputs":[
+      {
+        "transaction_hash":"6b1ffcc10501d7f871e24f4f7c266ca6d4b3db2048a750d4b67318c5cdde0af9",
+        "index":0,
+        "value":100,
+        "script":{
+          "type":"pubkey_hash",
+          "string":"OP_DUP OP_HASH160 7c9744f7752e644f9e222ea60b8f5d53b2f733a3 OP_EQUALVERIFY OP_CHECKSIG"
+        },
+        "address":"2N4bzzTEgM37sA8fzsm31qFJ4h4JRyCAUGt",
+        "metadata":{
+          "confirmations":null
+        }
+      },
+      {
+        "transaction_hash":"6b1ffcc10501d7f871e24f4f7c266ca6d4b3db2048a750d4b67318c5cdde0af9",
+        "index":1,
+        "value":5889900,
+        "script":{
+          "type":"script_hash",
+          "string":"OP_HASH160 c56b09b16a53b4683413c212b5dd3f16f04c53ff OP_EQUAL"
+        },
+        "address":"2NBF5LCJWCuKTL7Ssqn2riQvxdc6PjvVQKp",
+        "metadata":{
+          "memo":"change",
+          "wallet_path":"m/44/1/0/1/290",
+          "confirmations":null
+        }
+      }
+    ],
+    "url":"http://localhost:8999/transactions/bwgC2K7aLKoVeXaaDNHOXQ"
+  }
+}
