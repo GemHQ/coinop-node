@@ -15,6 +15,7 @@ module.exports = class MultiWallet
     bitcoin: 'bitcoin'
   }
 
+
   getNode = (arg) ->
     if arg instanceof HDNode
       arg
@@ -22,6 +23,7 @@ module.exports = class MultiWallet
       HDNode.fromBase58(arg)
     else
       throw Error("Unusable type #{typeof arg}")
+
 
   @generate: (names, networkName = 'testnet') ->
     unless networkName of NETWORKMAP
@@ -78,31 +80,6 @@ module.exports = class MultiWallet
       transactionBuilder.addOutput(scriptPubKey, value)
 
 
-  # should be a private method
-  # not sure how to test though
-  parsePath: (path) ->
-    parts = path.split('/')
-    # removes "m" from parts
-    indices = parts.slice(1).map (index) ->
-      # converts index to a number
-      +index
-
-
-  # should be a private method
-  # not sure how to test though
-  getPathForInput: (paymentResource, index) ->
-    path = paymentResource.inputs[index].output.metadata.wallet_path
-
-
-  deriveNodeForIndices: (parent, indices) ->
-    node = parent
-
-    indices.forEach (index) ->
-      node = node.derive(index)
-
-    return node
-
-
   getPubKeysForPath: (path) ->
     indices = @parsePath(path)
     trees = trees
@@ -118,18 +95,39 @@ module.exports = class MultiWallet
   getPrivKeyForPath: (path) ->
     indices = @parsePath(path)
     primaryMasterNode = @privateTrees.primary
-    primaryChildNode = @deriveNodeForIndices(primaryMasterNode ,indices)
+    primaryChildNode = @deriveNodeForIndices(primaryMasterNode, indices)
     privKey = primaryChildNode.privKey
 
 
+  createRedeemScript: (pubKeys, numberOfSigs=2) ->
+    bitcoin.scripts.multisigOutput(numberOfSigs, pubKeys)
 
 
+  # should be a private method
+  # not sure how to test though
+  parsePath: (path) ->
+    parts = path.split('/')
+    # removes "m" from parts
+    indices = parts.slice(1).map (index) ->
+      # converts index to a number
+      +index
 
 
+  # should be a private method
+  # not sure how to test though
+  getPathForInput: (paymentResource, index) ->
+    path = paymentResource.inputs[index].output.metadata.wallet_path
+    
 
+  # should be a private method
+  # not sure how to test though
+  deriveNodeForIndices: (parent, indices) ->
+    node = parent
 
+    indices.forEach (index) ->
+      node = node.derive(index)
 
-
+    return node
 
 
 

@@ -1,6 +1,8 @@
 
 bitcoin = require 'bitcoinjs-lib'
 {HDNode, ECKey} = bitcoin
+bs58check = require 'bs58check'
+
 MultiWallet = require '../../src/bit/multiwallet'
 
 transaction_data = require '../data/transaction.json'
@@ -13,17 +15,21 @@ expect = require('chai').expect
 describe "MultiWallet from MultiWallet.generate", ->
   multiwallet = MultiWallet.generate(['primary', 'backup'], 'testnet')
 
+
   it "should generate return a MultiWallet", ->
     expect(multiwallet).to.be.an.instanceof(MultiWallet)
 
+
   it "should have a property @network", ->
     expect(multiwallet.network).to.equal('testnet')
+
 
   it "@privateTrees @trees should have properties 'primary' and 'backup'", ->
     expect(multiwallet.privateTrees).to.have.a.property('primary')
     expect(multiwallet.privateTrees).to.have.a.property('backup')
     expect(multiwallet.trees).to.have.a.property('primary')
     expect(multiwallet.trees).to.have.a.property('backup')
+
 
   it '@privateTrees.primary and @privateTrees.backup should be HDNodes', ->
     primary = multiwallet.privateTrees.primary
@@ -32,7 +38,9 @@ describe "MultiWallet from MultiWallet.generate", ->
     expect(primary).to.be.an.instanceof(HDNode)
     expect(backup).to.be.an.instanceof(HDNode)
 
+
 describe "Constructor", ->
+  
   multiwallet = null
 
   before () ->
@@ -46,10 +54,12 @@ describe "Constructor", ->
       }
     }
 
+
   it 'should have prublicTrees, privateTrees, and trees properties', ->
     expect(multiwallet).to.have.a.property('publicTrees')
     expect(multiwallet).to.have.a.property('privateTrees')
     expect(multiwallet).to.have.a.property('trees')
+
 
   it 'should create HDNodes for all seeds', ->
     primaryNode = multiwallet.privateTrees.primary
@@ -60,9 +70,11 @@ describe "Constructor", ->
     expect(backupNode).to.be.an.instanceof(HDNode)
     expect(cosignerNode).to.be.an.instanceof(HDNode)
 
+
   it 'should throw an error when no private seed is provided', ->
     createMultiWallet = -> new MultiWallet({})
     expect(createMultiWallet).to.throw(Error)
+
 
   it 'should not throw an error if no public seeds are provided', ->
     createMultiWallet = -> new MultiWallet ({
@@ -87,6 +99,7 @@ describe 'transaction Preperation', ->
         cosigner: base58_seeds.cosigner
       }
     }
+
 
   describe 'addInputs', ->
     it 'should add every input to the provided transaction object', ->
@@ -155,12 +168,15 @@ describe 'transaction Preperation', ->
 
 
   describe "parsePath", ->
+
     it "should return an array of indices", ->
       indices = multiwallet.parsePath('m/44/1/0/0/0')
 
       expect(indices).to.deep.equal([44,1,0,0,0])
 
+
   describe "getPathForInput", ->
+
     it "should return the path from the given input index", ->
       {inputs} = payment_resource
 
@@ -170,7 +186,8 @@ describe 'transaction Preperation', ->
 
 
   describe "deriveNodeForIndices", ->
-    it 'should derive the right child node', ->
+
+    it 'should derive the correct child node', ->
       indices = [44,1,0,0,0]
       derived_primary_seed = transaction_data.base58_derived_seeds.primary
       primaryMasterNode = multiwallet.trees.primary
@@ -181,9 +198,8 @@ describe 'transaction Preperation', ->
         
 
   describe "getPubKeysForPath", ->
-       
-    it "should derive the right pubKeys for a given path", ->
 
+    it "should derive the correct pubKeys for a given path", ->
       {derived_pubkeys_hex} = transaction_data
       {backup, cosigner, primary} = derived_pubkeys_hex
       derivedpubKeys = multiwallet.getPubKeysForPath("m/44/1/0/0/0")
@@ -192,6 +208,49 @@ describe 'transaction Preperation', ->
       expect([backup, cosigner, primary]).to.deep.equal(derivedpubKeysHex)
       
 
+  describe.only "createRedeemScript", ->
+
+    it "should contain hex of all provided pubkeys", ->
+      {derived_pubkeys_hex} = transaction_data
+      pubKeys = multiwallet.getPubKeysForPath("m/44/1/0/0/0")
+      redeemScript = multiwallet.createRedeemScript(pubKeys)
+        .toASM()
+
+      for own name, pubKey of derived_pubkeys_hex
+        expect(redeemScript).to.contain(pubKey)
+
+
+    it "should contain OP_CHECKMULTISIG", ->
+      pubKeys = multiwallet.getPubKeysForPath("m/44/1/0/0/0")
+      redeemScript = multiwallet.createRedeemScript(pubKeys)
+        .toASM()
+      
+      expect(redeemScript).to.contain("OP_CHECKMULTISIG")
+
+
+
+
+  describe.only "payment.sign", ->
+
+    it "should generate the same hash for the same tx", ->
+      {inputs, outputs} = payment_resource
+      txb = new bitcoin.TransactionBuilder()
+      # utility
+      multiwallet.addInputs(inputs, txb)
+      multiwallet.addOutputs(outputs, txb)
+      
+      path = multiwallet.getPathForInput(payment_resource ,0)
+      
+      pubKeys = multiwallet.getPubKeysForPath(path)
+      privKey = multiwallet.getPrivKeyForPath(path)
+      # utility
+      redeemScript = multiwallet.createRedeemScript(pubKeys)
+
+      sig = txb.sign(0, privKey, redeemScript)
+      sig2 = txb.signatures[0].signatures[0]
+      
+      console.log(bs58check.encode sig.toScriptSignature(1))
+      console.log(bs58check.encode sig2.toScriptSignature(1))
 
 
 
