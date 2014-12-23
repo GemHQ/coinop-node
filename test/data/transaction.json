@@ -15,6 +15,7 @@
     "cosigner": "029b71b219b2e3267ade5a6bed1b07e1646fc9bcd1abace41f718851bc8c4a60dd",
     "primary": "02da1ca905615ede7b997ce05bc162a39f16302132963add975f685e3759710f9e"
   },
+  "primary_WIF": "L4BtgNWtKHHsSkG7CeNkLzxmQAbD9UcwSz6ux23RRK3ji9jSF4p4",
   "payment_resource": {
     "key":"bwgC2K7aLKoVeXaaDNHOXQ",
     "type":"outgoing",
