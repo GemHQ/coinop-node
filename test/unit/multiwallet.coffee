@@ -1,7 +1,7 @@
 
 bitcoin = require 'bitcoinjs-lib'
 {HDNode, ECKey, ECSignature} = bitcoin
-bs58check = require 'bs58check'
+bs58 = require 'bs58'
 
 MultiWallet = require '../../src/bit/multiwallet'
 txUtils = require '../../src/bit/transaction_utils'
@@ -191,7 +191,7 @@ describe 'transaction Preperation', ->
       expect([backup, cosigner, primary]).to.deep.equal(derivedpubKeysHex)
 
 
-  describe.only "getPrivKeyForPath", ->
+  describe "getPrivKeyForPath", ->
 
     it "should derive the correct privkey for a given path", ->
       privKey = multiwallet.getPrivKeyForPath([44,1,0,0,0])
@@ -240,8 +240,8 @@ describe 'transaction Preperation', ->
       txb.sign(0, privKey, redeemScript)
       signature = txb.signatures[0].signatures[0]
 
-      encodedSignature = bs58check.encode signature.toScriptSignature(1)
-      encodedSig = "5fQWuiJzFr2dNapzi1RPcJ3bLDRTQfijJvTzV2o5NrRxUzWQ652wyuE85PFqZXbSvhVYtow3qV4FrDgtFiPuRkzKQt4JMYixcpnKAajv"
+      encodedSignature = bs58.encode signature.toScriptSignature(1)
+      encodedSig = "iKkkiYrAqRKBWUpyCH2qWrnZ8VvJ2eQodjWhnvq1ScdxyAMLE5j9tVcw7BQg1Qr2M2BiLtqegtdxd9YP3tVaC4WzWNnzpPP4ak"
       
       expect(encodedSignature).to.equal(encodedSig)
 
@@ -288,7 +288,7 @@ describe 'transaction Preperation', ->
     it "should properly encode a signature", ->
       signature = txb.signatures[0].signatures[0]
       encodedSignature = multiwallet.encodeSignature(signature)
-      encodedSig = "5fQWuiJzFr2dNapzi1RPcJ3bLDRTQfijJvTzV2o5NrRxUzWQ652wyuE85PFqZXbSvhVYtow3qV4FrDgtFiPuRkzKQt4JMYixcpnKAajv"
+      encodedSig = "iKkkiYrAqRKBWUpyCH2qWrnZ8VvJ2eQodjWhnvq1ScdxyAMLE5j9tVcw7BQg1Qr2M2BiLtqegtdxd9YP3tVaC4WzWNnzpPP4ak"
 
       expect(encodedSignature).to.equal(encodedSig)
 
@@ -310,15 +310,15 @@ describe 'transaction Preperation', ->
 
     it "return an array of encoded signatures", ->
       encodedSignatures = multiwallet.encodeSignatures(signatures)
-      encodedSig = "5fQWuiJzFr2dNapzi1RPcJ3bLDRTQfijJvTzV2o5NrRxUzWQ652wyuE85PFqZXbSvhVYtow3qV4FrDgtFiPuRkzKQt4JMYixcpnKAajv"
+      encodedSig = "iKkkiYrAqRKBWUpyCH2qWrnZ8VvJ2eQodjWhnvq1ScdxyAMLE5j9tVcw7BQg1Qr2M2BiLtqegtdxd9YP3tVaC4WzWNnzpPP4ak"
 
       expect(encodedSignatures).to.deep.equal([encodedSig])
 
 
-  describe.only "prepareTransaction", ->
+  describe "prepareTransaction", ->
 
     it 'return an array of encoded signatures', ->
-      encodedSignatures = multiwallet.prepareTransaction(payment_resource)
-      encodedSig = "5fQWuiJzFr2dNapzi1RPcJ3bLDRTQfijJvTzV2o5NrRxUzWQ652wyuE85PFqZXbSvhVYtow3qV4FrDgtFiPuRkzKQt4JMYixcpnKAajv"
+      {signatures} = multiwallet.prepareTransaction(payment_resource)
+      encodedSig = "iKkkiYrAqRKBWUpyCH2qWrnZ8VvJ2eQodjWhnvq1ScdxyAMLE5j9tVcw7BQg1Qr2M2BiLtqegtdxd9YP3tVaC4WzWNnzpPP4ak"
 
-      expect(encodedSignatures).to.deep.equal([encodedSig])
+      expect(signatures).to.deep.equal([encodedSig])
