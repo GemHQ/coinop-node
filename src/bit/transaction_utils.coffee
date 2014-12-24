@@ -14,7 +14,7 @@ parsePath = (path) ->
     +index
 
 
-# FixMe: chnage so that it only takes the input rather than a resource and index
+# FixMe: change so that it only takes the input rather than a resource and index
 getPathForInput = (paymentResource, index) ->
   path = paymentResource.inputs[index].output.metadata.wallet_path
   parsePath(path)

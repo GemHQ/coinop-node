@@ -3,7 +3,7 @@ bitcoin = require "bitcoinjs-lib"
 {HDNode, ECKey} = bitcoin
 PassphraseBox = require "../crypto/passphrase_box"
 crypto = require 'crypto'
-bs58check = require 'bs58check'
+bs58 = require 'bs58'
 txUtils = require './transaction_utils'
 
 
@@ -64,8 +64,8 @@ module.exports = class MultiWallet
 
 
   # Returns an array of encoded signatures
-  prepareTransaction: (transactionContent) ->
-    txb = new bitcoin.TransactionBuilder()
+  prepareTransaction: (transactionContent, txb) ->
+    txb = txb || new bitcoin.TransactionBuilder()
     {inputs, outputs} = transactionContent
 
     @addInputs(inputs, txb)
@@ -76,6 +76,11 @@ module.exports = class MultiWallet
     signatures = @signAllInputs(paths, txb)
     encodedSignatures = @encodeSignatures(signatures)
 
+    {
+      signatures: encodedSignatures,
+      
+      txHash: txb.tx.getHash()
+    }
 
 
   addInputs: (inputs, transactionBuilder) ->
@@ -154,7 +159,7 @@ module.exports = class MultiWallet
 
 
   encodeSignature: (signature, hashType = 1) ->
-    bs58check.encode signature.toScriptSignature(hashType)
+    bs58.encode signature.toScriptSignature(hashType)
 
 
   encodeSignatures: (signatures) ->

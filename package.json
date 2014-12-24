@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "bitcoinjs-lib": "^1.4.1",
+    "bs58": "^2.0.1",
     "bs58check": "^1.0.3",
     "sodium": "^1.0.13"
   },
