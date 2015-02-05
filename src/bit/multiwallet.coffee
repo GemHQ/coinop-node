@@ -11,9 +11,9 @@ txUtils = require './transaction_utils'
 module.exports = class MultiWallet
 
   NETWORKMAP = {
-    testnet3: 'testnet',
-    testnet: 'testnet',
-    bitcoin_testnet: 'testnet',
+    testnet3: 'bitcoin_testnet',
+    testnet: 'bitcoin_testnet',
+    bitcoin_testnet: 'bitcoin_testnet',
     bitcoin: 'bitcoin'
   }
 
