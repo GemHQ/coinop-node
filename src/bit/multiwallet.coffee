@@ -80,7 +80,7 @@ module.exports = class MultiWallet
     {
       signatures: encodedSignatures,
       
-      txHash: txb.tx.getHash()
+      txHash: txb.tx.getHash().toString('hex')
     }
 
 
