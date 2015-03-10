@@ -8,7 +8,7 @@
   },
   "main": "src/index.coffee",
   "scripts": {
-    "preinstall": "sudo npm install -g node-gyp",
+    "prepublish": "coffee -o lib -c src" ,
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "license": "MIT",
@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "chai": "^1.10.0",
+    "coffee-script": "^1.9.1",
     "js-yaml": "^3.2.2",
     "testify": "^0.2.10"
   },
