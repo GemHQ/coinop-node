@@ -2,19 +2,33 @@
   "name": "coinop",
   "version": "0.1.0",
   "description": "Crypto currency conveniences",
-  "repository": "git@github.com:GemHQ/coinop-node.git",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:GemHQ/coinop-node.git"
+  },
   "main": "src/index.coffee",
   "scripts": {
+    "preinstall": "sudo npm install -g node-gyp",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "license": "MIT",
   "dependencies": {
     "bitcoinjs-lib": "^1.4.1",
+    "bs58": "^2.0.1",
+    "bs58check": "^1.0.3",
     "sodium": "^1.0.13"
   },
   "devDependencies": {
     "chai": "^1.10.0",
     "js-yaml": "^3.2.2",
     "testify": "^0.2.10"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/GemHQ/coinop-node/issues"
+  },
+  "homepage": "https://github.com/GemHQ/coinop-node",
+  "directories": {
+    "test": "test"
+  },
+  "author": ""
 }

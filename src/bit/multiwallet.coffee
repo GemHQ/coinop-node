@@ -3,6 +3,8 @@ bitcoin = require "bitcoinjs-lib"
 {HDNode, ECKey} = bitcoin
 PassphraseBox = require "../crypto/passphrase_box"
 crypto = require 'crypto'
+bs58 = require 'bs58'
+txUtils = require './transaction_utils'
 
 
 
@@ -12,8 +14,10 @@ module.exports = class MultiWallet
     testnet3: 'testnet',
     testnet: 'testnet',
     bitcoin_testnet: 'testnet',
-    bitcoin: 'bitcoin'
+    bitcoin: 'bitcoin',
+    mainnet: 'bitcoin'
   }
+
 
   getNode = (arg) ->
     if arg instanceof HDNode
@@ -22,6 +26,7 @@ module.exports = class MultiWallet
       HDNode.fromBase58(arg)
     else
       throw Error("Unusable type #{typeof arg}")
+
 
   @generate: (names, networkName = 'testnet') ->
     unless networkName of NETWORKMAP
@@ -54,7 +59,113 @@ module.exports = class MultiWallet
     for name, arg of privateTrees
       @privateTrees[name] = @trees[name] = getNode(arg)
 
-    if 'public' in options
+    if 'public' of options
       for name, arg of options.public
         @publicTrees[name] = @trees[name] = getNode(arg)
-        
+
+
+  # Returns an array of encoded signatures
+  prepareTransaction: (transactionContent, txb) ->
+    txb = txb || new bitcoin.TransactionBuilder()
+    {inputs, outputs} = transactionContent
+
+    @addInputs(inputs, txb)
+    @addOutputs(outputs, txb)
+
+    paths = txUtils.getPathsForInputs(inputs)
+
+    signatures = @signAllInputs(paths, txb)
+    encodedSignatures = @encodeSignatures(signatures)
+
+    {
+      signatures: encodedSignatures,
+      
+      txHash: txb.tx.getHash().toString('hex')
+    }
+
+
+  addInputs: (inputs, transactionBuilder) ->
+    inputs.forEach (input) ->
+      prevTx = input.output.transaction_hash
+      index = input.output.index
+      ASM = input.output.script.string
+      prevOutScript = bitcoin.Script.fromASM(ASM)
+
+      transactionBuilder.addInput(prevTx, index, undefined, prevOutScript)
+
+
+  addOutputs: (outputs, transactionBuilder) ->
+    outputs.forEach (output) ->
+      ASM = output.script.string
+      scriptPubKey = bitcoin.Script.fromASM(ASM)
+      value = output.value
+
+      transactionBuilder.addOutput(scriptPubKey, value)
+
+
+  # A path is an array of indices, ex: [44,1,0,0,0]
+  getPubKeysForPath: (path) ->
+    trees = trees
+    
+    masterNodes = ['backup', 'cosigner', 'primary'].map (nodeName) =>
+      masterNode = @trees[nodeName]
+      @deriveNodeForPath(masterNode, path)
+
+    pubKeys = masterNodes.map (node) ->
+      node.pubKey
+
+
+  # Fix: only works for primary
+        # only works for 2/3 signatures
+  # A path is an array of indices, ex: [44,1,0,0,0]
+  getPrivKeyForPath: (path) ->
+    primaryMasterNode = @privateTrees.primary
+    primaryChildNode = @deriveNodeForPath(primaryMasterNode, path)
+    privKey = primaryChildNode.privKey
+
+
+  createRedeemScript: (pubKeys, numberOfSigs=2) ->
+    bitcoin.scripts.multisigOutput(numberOfSigs, pubKeys)
+
+    
+  # A path is an array of indices, ex: [44,1,0,0,0]
+  deriveNodeForPath: (parent, path) ->
+    node = parent
+
+    path.forEach (index) ->
+      node = node.derive(index)
+
+    return node
+
+
+  # Fix: Expects only one signature per input
+       # Only expect primary key to sign
+       # This works for 2/3 multisig
+  # returns an array of bae58-encoded signatures
+  signAllInputs: (paths, txb) ->
+    signatures = []
+    inputs = txb.tx.ins
+
+    inputs.forEach (input, index) =>
+      path = paths[index]
+      pubKeys = @getPubKeysForPath(path)
+      privKey = @getPrivKeyForPath(path)
+      redeemScript = @createRedeemScript(pubKeys)
+
+      txb.sign(index, privKey, redeemScript)
+      signature = txb.signatures[index].signatures[0]
+      signatures.push(signature)
+
+    return signatures
+
+
+  encodeSignature: (signature, hashType = 1) ->
+    bs58.encode signature.toScriptSignature(hashType)
+
+
+  encodeSignatures: (signatures) ->
+    encodedSignatures = signatures.map (signature) =>
+      @encodeSignature(signature)
+
+
+
