@@ -38,6 +38,7 @@ module.exports = class MultiWallet
       seed = crypto.randomBytes(32)
       networkDetails = bitcoin.networks[network]
       node = HDNode.fromSeedBuffer(seed, networkDetails)
+      node.seed = seed
       masters[name] = node
 
     new @({private: masters, network})
