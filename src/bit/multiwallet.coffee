@@ -1,8 +1,8 @@
 
 bitcoin = require "bitcoinjs-lib"
 {HDNode, ECKey} = bitcoin
-PassphraseBox = require "../crypto/passphrase_box"
 crypto = require 'crypto'
+randomBytes = require 'randombytes'
 bs58 = require 'bs58'
 txUtils = require './transaction_utils'
 
@@ -35,7 +35,7 @@ module.exports = class MultiWallet
     network = NETWORKMAP[networkName]
     masters = {}
     for name in names
-      seed = crypto.randomBytes(32)
+      seed = randomBytes(32)
       networkDetails = bitcoin.networks[network]
       node = HDNode.fromSeedBuffer(seed, networkDetails)
       node.seed = seed
