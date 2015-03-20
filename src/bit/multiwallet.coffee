@@ -1,11 +1,9 @@
 
 bitcoin = require "bitcoinjs-lib"
 {HDNode, ECKey} = bitcoin
-crypto = require 'crypto'
 randomBytes = require 'randombytes'
 bs58 = require 'bs58'
 txUtils = require './transaction_utils'
-
 
 
 module.exports = class MultiWallet
