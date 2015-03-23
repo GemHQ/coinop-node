@@ -21,7 +21,7 @@ module.exports = class MultiWallet
     if arg instanceof HDNode
       arg
     else if typeof arg == 'string'
-      HDNode.fromfromSeedHex(arg, bitcoin.networks[network])
+      HDNode.fromSeedHex(arg, bitcoin.networks[network])
     else
       throw Error("Unusable type #{typeof arg}")
 
