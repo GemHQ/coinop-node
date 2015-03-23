@@ -9,10 +9,12 @@ module.exports = class PassphraseBox
     box = new @({passphrase})
     box.encrypt(plaintext)
 
+
   @decrypt: (passphrase, encrypted) ->
     {salt, iterations, nonce, ciphertext} = encrypted
     box = new @({passphrase, salt, iterations})
     box.decrypt(ciphertext, nonce)
+
 
   constructor: ({passphrase, salt, @iterations}) ->
     if salt

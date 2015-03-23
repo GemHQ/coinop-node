@@ -24,8 +24,7 @@
   },
   "devDependencies": {
     "chai": "^1.10.0",
-    "js-yaml": "^3.2.2",
-    "testify": "^0.2.10"
+    "coffeeify": "^1.0.0"
   },
   "bugs": {
     "url": "https://github.com/GemHQ/coinop-node/issues"
