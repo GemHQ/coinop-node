@@ -1,11 +1,9 @@
 
 bitcoin = require "bitcoinjs-lib"
 {HDNode, ECKey} = bitcoin
-PassphraseBox = require "../crypto/passphrase_box"
-crypto = require 'crypto'
+randomBytes = require 'randombytes'
 bs58 = require 'bs58'
 txUtils = require './transaction_utils'
-
 
 
 module.exports = class MultiWallet
@@ -19,11 +17,11 @@ module.exports = class MultiWallet
   }
 
 
-  getNode = (arg) ->
+  getNode = (arg, network) ->
     if arg instanceof HDNode
       arg
     else if typeof arg == 'string'
-      HDNode.fromBase58(arg)
+      HDNode.fromSeedHex(arg, bitcoin.networks[network])
     else
       throw Error("Unusable type #{typeof arg}")
 
@@ -32,12 +30,16 @@ module.exports = class MultiWallet
     unless networkName of NETWORKMAP
       throw Error("Unknown network #{networkName}")
 
+    # normalizes the network name for bitcoinjs-lib
     network = NETWORKMAP[networkName]
+    # networkDeatils is an object that bitcoinjs-lib
+    # needs to construct a HDNode
+    networkDetails = bitcoin.networks[network]
     masters = {}
     for name in names
-      seed = crypto.randomBytes(32)
-      networkDetails = bitcoin.networks[network]
+      seed = randomBytes(32)
       node = HDNode.fromSeedBuffer(seed, networkDetails)
+      node.seed = seed
       masters[name] = node
 
     new @({private: masters, network})
@@ -48,8 +50,10 @@ module.exports = class MultiWallet
     @publicTrees = {}
     @trees = {}
     if 'network' of options and options.network of NETWORKMAP
+      # normalizes the network name for bitcoinjs-lib
       @network = NETWORKMAP[options.network]
     else
+      # normalizes the network name for bitcoinjs-lib
       @network = NETWORKMAP['testnet']
 
     privateTrees = options.private
@@ -57,11 +61,11 @@ module.exports = class MultiWallet
       throw Error("Must supply private")
 
     for name, arg of privateTrees
-      @privateTrees[name] = @trees[name] = getNode(arg)
+      @privateTrees[name] = @trees[name] = getNode(arg, @network)
 
     if 'public' of options
       for name, arg of options.public
-        @publicTrees[name] = @trees[name] = getNode(arg)
+        @publicTrees[name] = @trees[name] = getNode(arg, @network)
 
 
   # Returns an array of encoded signatures

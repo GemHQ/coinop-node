@@ -8,7 +8,7 @@
   },
   "main": "lib/index.js",
   "scripts": {
-    "prepublish": "coffee -o lib -c src" ,
+    "prepublish": "coffee -o lib -c src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "license": "MIT",
@@ -16,12 +16,21 @@
     "bitcoinjs-lib": "^1.4.1",
     "bs58": "^2.0.1",
     "bs58check": "^1.0.3",
+    "libsodium-wrappers": "^0.2.4",
+    "randombytes": "^2.0.1",
     "sodium": "^1.0.13"
   },
+  "browser": {
+    "./lib/crypto/passphrase_box.js": "./lib/crypto/passphrase_box_browser.js"
+  },
   "devDependencies": {
+    "browserify": "^9.0.3",
     "chai": "^1.10.0",
-    "js-yaml": "^3.2.2",
-    "testify": "^0.2.10"
+    "coffeeify": "^1.0.0",
+    "gulp": "^3.8.11",
+    "gulp-open": "^0.3.2",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^2.6.0"
   },
   "bugs": {
     "url": "https://github.com/GemHQ/coinop-node/issues"
