@@ -10,4 +10,4 @@
 # node-sodium, instead it uses libsodium.js and therefor
 # had to be rewritten
 PassphraseBoxTest = require('./passphrase_box_browser')
-MultiWallet = require('./multiwallet')
+# MultiWallet = require('./multiwallet')

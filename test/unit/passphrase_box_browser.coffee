@@ -4,6 +4,7 @@ expect = require('chai').expect
 {encryptionData} = require('../data/passphrase_box.json')
 
 describe 'PassphraseBox', ->
+  @timeout(0)
   describe 'encrypt', ->
     it 'should return an object containing ciphertext, salt, noce, and iterations', (done) ->
       PassphraseBox.encrypt 'passphrase', 'secret', (error, encryptedData) ->
@@ -12,13 +13,13 @@ describe 'PassphraseBox', ->
         done(error)
 
 
-  describe 'decrypt', ->
-    @timeout(0)
-    it 'should decrypt the plain text', (done) ->
-      data = encryptionData[0]
-      PassphraseBox.decrypt data.passphrase, data, (error, plaintext) ->
-        expect(plaintext).to.equal(data.plaintext)
-        done(error)
+describe 'decrypt', ->
+  @timeout(0)
+  it 'should decrypt the plain text', (done) ->
+    data = encryptionData[0]
+    PassphraseBox.decrypt data.passphrase, data, (error, plaintext) ->
+      expect(plaintext).to.equal(data.plaintext)
+      done(error)
 
 
   describe 'full-circle encryption/decryption', ->
