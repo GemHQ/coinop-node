@@ -25,6 +25,16 @@ module.exports = class MultiWallet
     else
       throw Error("Unusable type #{typeof arg}")
 
+  
+  getPublicNode = (arg, network) ->
+    if arg instanceof HDNode
+      arg
+    else if typeof arg == 'string'
+      # The network can be derived from the Base58 encoded string
+      HDNode.fromBase58(arg)
+    else
+      throw Error("Unusable type #{typeof arg}")
+
 
   @generate: (names, networkName = 'testnet') ->
     unless networkName of NETWORKMAP
@@ -65,7 +75,7 @@ module.exports = class MultiWallet
 
     if 'public' of options
       for name, arg of options.public
-        @publicTrees[name] = @trees[name] = getNode(arg, @network)
+        @publicTrees[name] = @trees[name] = getPublicNode(arg, @network)
 
 
   # Returns an array of encoded signatures
