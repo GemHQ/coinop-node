@@ -31,6 +31,7 @@ module.exports = class PassphraseBox
     crypto.pbkdf2(passphrase, @salt, @iterations, 64, (error, buffer) =>
       return callback(error) if error
 
+
       @aes_key = buffer.slice(0,32)
       @hmac_key = buffer.slice(32,64)
       callback(null, @)
@@ -38,24 +39,20 @@ module.exports = class PassphraseBox
 
 
   encrypt: (plaintext, nonce) ->
-    # {cipherText, nonce} = @box.encrypt(plaintext, "utf8")
-    # # Strip 16 bytes of zero-padding, as the implementations
-    # # used in other languages do not include it.
-    # ciphertext = cipherText.slice(16)
     try
       nonce ?= crypto.randomBytes(16)
     catch
       throw new Error("Error generating random bytes")
 
     aes = crypto.createCipheriv('aes-256-cbc', @aes_key, nonce)
-    aes.update(plaintext, 'utf8')
-    encrypted = aes.final()
+    encrypted = aes.update(plaintext, 'utf8')
+    encrypted = Buffer.concat([encrypted, aes.final()])
 
-    hash = crypto.createHmac('sha256', @hmac_key)
+    mac = crypto.createHmac('sha256', @hmac_key)
       .update(Buffer.concat([nonce, encrypted]))
       .digest()
-    
-    ciphertext = Buffer.concat([encrypted, hash])
+
+    ciphertext = Buffer.concat([encrypted, mac])
 
     {
       iterations: @iterations
@@ -65,22 +62,20 @@ module.exports = class PassphraseBox
     }
 
 
-  decrypt: (ciphertext, nonce) ->
-    ciphertext = new Buffer(ciphertext, 'hex')
-    nonce = new Buffer(nonce, 'hex')
-    mac = ciphertext.slice(32, 64)
-    ciphertext = ciphertext.slice(0, 32)
-    hmac = crypto.createHmac('sha256', @hmac_key)
-      .update(Buffer.concat([nonce, ciphertext]))
+  decrypt: (cipherData, nonce) ->
+    cipherDataBuf = new Buffer(cipherData, 'hex')
+    nonceBuf = new Buffer(nonce, 'hex')
+    ciphertext = cipherDataBuf.slice(0, -32)
+    hmacOld = cipherDataBuf.slice(-32).toString('hex')
+    hmacNew = crypto.createHmac('sha256', @hmac_key)
+      .update(Buffer.concat([nonceBuf, ciphertext]))
+      .digest()
+      .toString('hex')
 
-    if hmac.digest().toString('hex') != mac.toString('hex')
+    if hmacOld != hmacNew
       throw new Error('Invalid authentication code - this
                        ciphertext may have been tampered with')
 
-    aes = crypto.createDecipheriv('aes-256-cbc', @aes_key, nonce)
-      .update(ciphertext, 'utf8')
-      .final('utf8')
-
-
-
-
+    aes = crypto.createDecipheriv('aes-256-cbc', @aes_key, nonceBuf)
+    decrypted = aes.update(ciphertext, 'hex', 'utf8')
+    decrypted += aes.final('utf8')

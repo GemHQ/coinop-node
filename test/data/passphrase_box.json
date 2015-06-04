@@ -1,44 +1,36 @@
 {
   "encryptionData": [
     {
-      "salt": "86e94c4c3abcb5c83b0dc3c89fc772aa",
+      "salt": "9089b2222952b0658b109d37a3d8d76f",
       "iterations": 100000,
-      "nonce": "7f6e295667a9fb8aac27b0340599c708",
-      "ciphertext": "1540b6f4ce28f8101ec227734eb556703af193030907f8d91496f66738c4dffcf2c389b3d8ca53e69ef52571e61758d6",
+      "nonce": "c025eb9c1ffbf7592e15f3ecb2a034a0",
+      "ciphertext": "ed5f95e99925ec573c0799db422b9d08fb3d6362349e532da5d3878401721874f38580d2fcb6f7b3236428fbbcb34e89",
       "passphrase": "passphrase",
       "plaintext": "secret"
     },
     {
-      "salt": "d2bb97377f342aea5d4acb93ad83c6f2",
+      "salt": "f999879a3483e9b604793712d5320ddf",
       "iterations": 100000,
-      "nonce": "ebdd0583b48a0c3258e034aa8b17b46999f5a354c04e6838",
-      "ciphertext": "96ef27fd163c80e924621c586dc67210ac43759eaea37d05775f8d",
-      "passphrase": "passphrase 1",
-      "plaintext": "plaintext 1"
+      "nonce": "9aedad4c82b542f1d321a99c25c0112f",
+      "ciphertext": "75f19ae67550c398ead3efd5dcd05c140d2de6bd72fd8932ba780c433779fbcd0d569bc1e5e620582e1c57308b92fec5",
+      "passphrase": "hot sauce",
+      "plaintext": "bananer factory"
     },
     {
-      "salt": "4cb84d5c2081de55e28956606a730a27",
+      "salt": "905868b4eeaebcfe007e6562ec41af05",
       "iterations": 100000,
-      "nonce": "b73aa51f451adbd63a5d8652c150d55cc8fd12629213e65a",
-      "ciphertext": "91f3d7f8e56a3f5244ed502c859524b40b4ea97664f69509495ba2",
-      "passphrase": "passphrase 2",
-      "plaintext": "plaintext 2"
+      "nonce": "b5da7b658eae49050daef1fdec817331",
+      "ciphertext": "30b2b58ca04c9bfb8a962f1e569746a8f0a233449cb17629c8d4b220160a3b375d46337e5b43fea28059d55971a7d41a",
+      "passphrase": "all aboard",
+      "plaintext": "to funky town"
     },
     {
-      "salt": "3bbe96d6c5597b32756fc0f39ee6f486",
+      "salt": "35633661af4da86513e18db6db3ab9b9",
       "iterations": 100000,
-      "nonce": "397b64e7e268e1c41bb8a0e1e35f527abee8beef2c5ec348",
-      "ciphertext": "94db606be4cbd1e3386361158e5fc8b2c403a9becf2193fd545532",
-      "passphrase": "passphrase 3",
-      "plaintext": "plaintext 3"
-    },
-    {
-      "salt": "6ccaea070cba768179c2254dcefacdd0",
-      "iterations": 100000,
-      "nonce": "09d28dfc37d6391644fb5e9dde6ca70ad53a91f3d6014eca",
-      "ciphertext": "d2150e910171e02fc518f50966cb66b15a913174ff1975dab43352",
-      "passphrase": "passphrase 4",
-      "plaintext": "plaintext 4"
+      "nonce": "2c4f3863c50537f6709445e7675171fc",
+      "ciphertext": "571a0d93d1c428253a00e4a655f6340a4dab38c5cc0bb4aeda5cdef8f0d20e021527ab6a011b846f752719c6069487abccf71d08744302189b865934191ba708",
+      "passphrase": "a phrase a day",
+      "plaintext": "keeps the boogy man away"
     }
   ]
 }
