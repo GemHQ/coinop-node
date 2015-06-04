@@ -1,6 +1,14 @@
 {
   "encryptionData": [
     {
+      "salt": "86e94c4c3abcb5c83b0dc3c89fc772aa",
+      "iterations": 100000,
+      "nonce": "7f6e295667a9fb8aac27b0340599c708",
+      "ciphertext": "1540b6f4ce28f8101ec227734eb556703af193030907f8d91496f66738c4dffcf2c389b3d8ca53e69ef52571e61758d6",
+      "passphrase": "passphrase",
+      "plaintext": "secret"
+    },
+    {
       "salt": "d2bb97377f342aea5d4acb93ad83c6f2",
       "iterations": 100000,
       "nonce": "ebdd0583b48a0c3258e034aa8b17b46999f5a354c04e6838",
