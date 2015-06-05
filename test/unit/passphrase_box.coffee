@@ -15,15 +15,6 @@ describe 'encrypt', ->
 
 describe 'decrypt', ->
   it 'should decrypt the plain text', (done) ->
-    data = encryptionData[3]
-    PassphraseBox.decrypt(data.passphrase, data, (error, plaintext) ->
-      expect(plaintext).to.equal(data.plaintext)
-      done(error)
-    )
-
-describe 'decrypt', ->
-  it 'should decrypt the plain text', (done) ->
-    
     decryptAll = (encryptionData, i, error) ->
       len = encryptionData.length
       if i == len or error? 
@@ -37,8 +28,6 @@ describe 'decrypt', ->
     decryptAll(encryptionData, 0, null)
 
 
-
-
 describe 'full-circle encryption/decryption', ->
   it 'should decreypt the encrypted', (done) ->
     testAll = (encryptionData, i, error) ->
@@ -50,6 +39,7 @@ describe 'full-circle encryption/decryption', ->
         PassphraseBox.encrypt(data.passphrase, data.plaintext, (error, encrypted) ->
           testAll(encryptionData, i+1, error) if error
           PassphraseBox.decrypt data.passphrase, encrypted, (error, plaintext) -> 
+            console.log plaintext
             expect(plaintext).to.equal(data.plaintext)
             testAll(encryptionData, i+1, error)
         )

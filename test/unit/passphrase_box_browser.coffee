@@ -1,5 +1,5 @@
 
-PassphraseBox = require('../../src/crypto/passphrase_box_browser')
+PassphraseBox = require('../../src/crypto/passphrase_box')
 expect = require('chai').expect
 {encryptionData} = require('../data/passphrase_box.json')
 
