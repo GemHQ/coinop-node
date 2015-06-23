@@ -11,9 +11,9 @@ module.exports = class PassphraseBoxAES
 
 
   @decrypt: (passphrase, encrypted, callback) ->
-    {salt, iterations, nonce, ciphertext} = encrypted
+    {salt, iterations, iv, ciphertext} = encrypted
     new @({passphrase, salt, iterations}, (error, box) ->
-      callback(error, box.decrypt(ciphertext, nonce))
+      callback(error, box.decrypt(ciphertext, iv))
     )
 
 
@@ -38,18 +38,18 @@ module.exports = class PassphraseBoxAES
     )
 
 
-  encrypt: (plaintext, nonce) ->
+  encrypt: (plaintext, iv) ->
     try
-      nonce ?= crypto.randomBytes(16)
+      iv ?= crypto.randomBytes(16)
     catch
       throw new Error("Error generating random bytes")
 
-    aes = crypto.createCipheriv('aes-256-cbc', @aes_key, nonce)
+    aes = crypto.createCipheriv('aes-256-cbc', @aes_key, iv)
     encrypted = aes.update(plaintext, 'utf8')
     encrypted = Buffer.concat([encrypted, aes.final()])
 
     mac = crypto.createHmac('sha256', @hmac_key)
-      .update(Buffer.concat([nonce, encrypted]))
+      .update(Buffer.concat([iv, encrypted]))
       .digest()
 
     ciphertext = Buffer.concat([encrypted, mac])
@@ -57,18 +57,18 @@ module.exports = class PassphraseBoxAES
     {
       iterations: @iterations
       salt: @salt.toString("hex")
-      nonce: nonce.toString("hex")
+      iv: iv.toString("hex")
       ciphertext: ciphertext.toString("hex")
     }
 
 
-  decrypt: (cipherData, nonce) ->
+  decrypt: (cipherData, iv) ->
     cipherDataBuf = new Buffer(cipherData, 'hex')
-    nonceBuf = new Buffer(nonce, 'hex')
+    ivBuf = new Buffer(iv, 'hex')
     ciphertext = cipherDataBuf.slice(0, -32)
     hmacOld = cipherDataBuf.slice(-32).toString('hex')
     hmacNew = crypto.createHmac('sha256', @hmac_key)
-      .update(Buffer.concat([nonceBuf, ciphertext]))
+      .update(Buffer.concat([ivBuf, ciphertext]))
       .digest()
       .toString('hex')
 
@@ -76,6 +76,6 @@ module.exports = class PassphraseBoxAES
       throw new Error('Invalid authentication code - this
                        ciphertext may have been tampered with')
 
-    aes = crypto.createDecipheriv('aes-256-cbc', @aes_key, nonceBuf)
+    aes = crypto.createDecipheriv('aes-256-cbc', @aes_key, ivBuf)
     decrypted = aes.update(ciphertext, 'hex', 'utf8')
     decrypted += aes.final('utf8')
