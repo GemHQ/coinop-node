@@ -1,0 +1,36 @@
+{
+  "encryptionData": [
+    {
+      "salt": "d2bb97377f342aea5d4acb93ad83c6f2",
+      "iterations": 100000,
+      "nonce": "ebdd0583b48a0c3258e034aa8b17b46999f5a354c04e6838",
+      "ciphertext": "96ef27fd163c80e924621c586dc67210ac43759eaea37d05775f8d",
+      "passphrase": "passphrase 1",
+      "plaintext": "plaintext 1"
+    },
+    {
+      "salt": "4cb84d5c2081de55e28956606a730a27",
+      "iterations": 100000,
+      "nonce": "b73aa51f451adbd63a5d8652c150d55cc8fd12629213e65a",
+      "ciphertext": "91f3d7f8e56a3f5244ed502c859524b40b4ea97664f69509495ba2",
+      "passphrase": "passphrase 2",
+      "plaintext": "plaintext 2"
+    },
+    {
+      "salt": "3bbe96d6c5597b32756fc0f39ee6f486",
+      "iterations": 100000,
+      "nonce": "397b64e7e268e1c41bb8a0e1e35f527abee8beef2c5ec348",
+      "ciphertext": "94db606be4cbd1e3386361158e5fc8b2c403a9becf2193fd545532",
+      "passphrase": "passphrase 3",
+      "plaintext": "plaintext 3"
+    },
+    {
+      "salt": "6ccaea070cba768179c2254dcefacdd0",
+      "iterations": 100000,
+      "nonce": "09d28dfc37d6391644fb5e9dde6ca70ad53a91f3d6014eca",
+      "ciphertext": "d2150e910171e02fc518f50966cb66b15a913174ff1975dab43352",
+      "passphrase": "passphrase 4",
+      "plaintext": "plaintext 4"
+    }
+  ]
+}
