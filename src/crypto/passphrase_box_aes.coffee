@@ -28,7 +28,8 @@ module.exports = class PassphraseBoxAES
         throw new Error("Error generating random bytes")
 
     unless @iterations
-      array = new UintArray32(1)
+      array = [0]
+
       crypto.getRandomValues(array)
       @iterations = ITERATIONS + (array[0] % ITERATIONS_RANGE)
 
