@@ -28,10 +28,8 @@ module.exports = class PassphraseBoxAES
         throw new Error("Error generating random bytes")
 
     unless @iterations
-      array = [0]
-
-      window.crypto.getRandomValues(array)
-      @iterations = ITERATIONS + (array[0] % ITERATIONS_RANGE)
+      randomValues = crypto.randomBytes(4)
+      @iterations = ITERATIONS + (randomValues.readUInt32LE(0) % ITERATIONS_RANGE)
 
     crypto.pbkdf2(passphrase, @salt, @iterations, 64, (error, buffer) =>
       return callback(error) if error
