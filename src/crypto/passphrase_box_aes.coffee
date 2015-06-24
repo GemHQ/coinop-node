@@ -2,7 +2,8 @@ crypto = require "crypto"
 
 module.exports = class PassphraseBoxAES
 
-  ITERATIONS = 100000
+  ITERATIONS = 90000
+  ITERATIONS_RANGE = 20000
 
   @encrypt: (passphrase, plaintext, callback) ->
     new @({passphrase}, (error, box) ->
@@ -26,7 +27,10 @@ module.exports = class PassphraseBoxAES
       catch
         throw new Error("Error generating random bytes")
 
-    @iterations ?= ITERATIONS
+    unless @iterations
+      array = new UintArray32(1)
+      crypto.getRandomValues(array)
+      @iterations = ITERATIONS + (array[0] % ITERATIONS_RANGE)
 
     crypto.pbkdf2(passphrase, @salt, @iterations, 64, (error, buffer) =>
       return callback(error) if error
@@ -76,6 +80,6 @@ module.exports = class PassphraseBoxAES
       throw new Error('Invalid authentication code - this
                        ciphertext may have been tampered with')
 
-    aes = crypto.createDecipheriv('aes-256-cbc', @aes_key, ivBuf)
+    aes = crypto.createDecipheriv('aes-256-cbc', @aes_key, Buf)
     decrypted = aes.update(ciphertext, 'hex', 'utf8')
     decrypted += aes.final('utf8')
