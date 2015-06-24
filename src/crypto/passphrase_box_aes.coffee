@@ -30,7 +30,7 @@ module.exports = class PassphraseBoxAES
     unless @iterations
       array = [0]
 
-      crypto.getRandomValues(array)
+      window.crypto.getRandomValues(array)
       @iterations = ITERATIONS + (array[0] % ITERATIONS_RANGE)
 
     crypto.pbkdf2(passphrase, @salt, @iterations, 64, (error, buffer) =>
