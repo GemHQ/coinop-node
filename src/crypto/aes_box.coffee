@@ -1,6 +1,6 @@
 crypto = require "crypto"
 
-module.exports = class AESBox
+module.exports = class PassphraseBox
 
   ITERATIONS = 100000
 
@@ -11,9 +11,9 @@ module.exports = class AESBox
 
 
   @decrypt: (passphrase, encrypted, callback) ->
-    {salt, iterations, nonce, ciphertext} = encrypted
+    {salt, iterations, iv, ciphertext} = encrypted
     new @({passphrase, salt, iterations}, (error, box) ->
-      callback(error, box.decrypt(ciphertext, nonce))
+      callback(error, box.decrypt(ciphertext, iv))
     )
 
 
@@ -31,25 +31,30 @@ module.exports = class AESBox
     crypto.pbkdf2(passphrase, @salt, @iterations, 64, (error, buffer) =>
       return callback(error) if error
 
-
       @aes_key = buffer.slice(0,32)
       @hmac_key = buffer.slice(32,64)
       callback(null, @)
     )
 
 
-  encrypt: (plaintext, nonce) ->
+  encrypt: (plaintext, iv) ->
     try
-      nonce ?= crypto.randomBytes(16)
+      iv ?= crypto.randomBytes(16)
     catch
       throw new Error("Error generating random bytes")
 
-    aes = crypto.createCipheriv('aes-256-cbc', @aes_key, nonce)
+    if typeof iv == 'string'
+      ivBuf = new Buffer(iv, 'hex')
+    else
+      ivBuf = iv
+
+    aes = crypto.createCipheriv('aes-256-cbc', @aes_key, ivBuf)
+    aes.setAutoPadding(false)
     encrypted = aes.update(plaintext, 'utf8')
     encrypted = Buffer.concat([encrypted, aes.final()])
 
     mac = crypto.createHmac('sha256', @hmac_key)
-      .update(Buffer.concat([nonce, encrypted]))
+      .update(Buffer.concat([ivBuf, encrypted]))
       .digest()
 
     ciphertext = Buffer.concat([encrypted, mac])
@@ -57,18 +62,18 @@ module.exports = class AESBox
     {
       iterations: @iterations
       salt: @salt.toString("hex")
-      nonce: nonce.toString("hex")
+      iv: ivBuf.toString("hex")
       ciphertext: ciphertext.toString("hex")
     }
 
 
-  decrypt: (cipherData, nonce) ->
+  decrypt: (cipherData, iv) ->
     cipherDataBuf = new Buffer(cipherData, 'hex')
-    nonceBuf = new Buffer(nonce, 'hex')
+    ivBuf = new Buffer(iv, 'hex')
     ciphertext = cipherDataBuf.slice(0, -32)
     hmacOld = cipherDataBuf.slice(-32).toString('hex')
     hmacNew = crypto.createHmac('sha256', @hmac_key)
-      .update(Buffer.concat([nonceBuf, ciphertext]))
+      .update(Buffer.concat([ivBuf, ciphertext]))
       .digest()
       .toString('hex')
 
@@ -76,6 +81,6 @@ module.exports = class AESBox
       throw new Error('Invalid authentication code - this
                        ciphertext may have been tampered with')
 
-    aes = crypto.createDecipheriv('aes-256-cbc', @aes_key, nonceBuf)
+    aes = crypto.createDecipheriv('aes-256-cbc', @aes_key, ivBuf)
     decrypted = aes.update(ciphertext, 'hex', 'utf8')
     decrypted += aes.final('utf8')

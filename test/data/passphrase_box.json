@@ -1,5 +1,5 @@
 {
-  "encryptionData": [
+  "sodiumData": [
     {
       "salt": "d2bb97377f342aea5d4acb93ad83c6f2",
       "iterations": 100000,
