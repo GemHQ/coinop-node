@@ -82,5 +82,6 @@ module.exports = class PassphraseBox
                        ciphertext may have been tampered with')
 
     aes = crypto.createDecipheriv('aes-256-cbc', @aes_key, ivBuf)
+    aes.setAutoPadding(false)
     decrypted = aes.update(ciphertext, 'hex', 'utf8')
     decrypted += aes.final('utf8')

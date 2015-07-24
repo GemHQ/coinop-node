@@ -5,7 +5,7 @@ expect = require('chai').expect
 {aesData} = require('../data/hybrid_box.json')
 
 
-describe 'encryption', -> 
+describe 'encryp', -> 
   it 'should create the correct ciphertext using aes', (done) ->
     testAll = (aesData, i, error) ->
       len = aesData.length
@@ -22,10 +22,10 @@ describe 'encryption', ->
     testAll(aesData, 0, null)
 
 
-describe 'encrypt', ->
-  it.only 'should return an object containing ciphertext, salt, iv, and iterations', (done) ->
-    HybridBox.encrypt 'a phrase a day', 'keeps the boogy man away', (error, encryptedData) ->
-      console.log error, encryptedData
+describe 'encrypt keys', ->
+  it 'should return an object containing ciphertext, salt, iv, and iterations', (done) ->
+    data = aesData[1]
+    HybridBox.encrypt data.passphrase, data.plaintext, (error, encryptedData) ->
       expect(encryptedData).to.include.keys('iterations', 'salt',
                                             'iv', 'ciphertext')
       done(error)
@@ -33,17 +33,17 @@ describe 'encrypt', ->
 
 describe 'decrypt', ->
   it 'should decrypt the plain text using sodium', (done) ->
-    decryptAll = (sodiumData, i, error) ->
-      len = sodiumData.length
+    decryptAll = (aesData, i, error) ->
+      len = aesData.length
       if i == len or error? 
         done(error)
       else
-        data = sodiumData[i]
+        data = aesData[i]
         HybridBox.decrypt(data.passphrase, data, (error, plaintext) ->
           expect(plaintext).to.equal(data.plaintext)
-          decryptAll(sodiumData, i+1, error)
+          decryptAll(aesData, i+1, error)
         )
-    decryptAll(sodiumData, 0, null)
+    decryptAll(aesData, 0, null)
 
 
 describe 'full-circle encryption/decryption', ->
@@ -51,14 +51,14 @@ describe 'full-circle encryption/decryption', ->
     testAll = (aesData, i, error) ->
       len = aesData.length
       if i == len or error? 
-        done(error)
+        return done(error)
       else
         data = aesData[i]
         AESBox.encrypt(data.passphrase, data.plaintext, (error, encrypted) ->
           testAll(aesData, i+1, error) if error
-          AESBox.decrypt data.passphrase, encrypted, (error, plaintext) -> 
-            console.log plaintext
+          AESBox.decrypt(data.passphrase, encrypted, (error, plaintext) -> 
             expect(plaintext).to.equal(data.plaintext)
             testAll(aesData, i+1, error)
+          )
         )
     testAll(aesData, 0, null)
