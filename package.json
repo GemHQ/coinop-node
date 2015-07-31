@@ -13,7 +13,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "bitcoinjs-lib": "^1.4.1",
+    "bitcoinjs-lib": "1.4.1",
     "bs58": "^2.0.1",
     "bs58check": "^1.0.3",
     "libsodium-wrappers": "^0.2.4",
