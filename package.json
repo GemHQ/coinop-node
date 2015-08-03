@@ -13,12 +13,12 @@
   },
   "license": "MIT",
   "dependencies": {
-    "bitcoinjs-lib": "^1.4.1",
+    "bitcoinjs-lib": "1.4.1",
     "bs58": "^2.0.1",
     "bs58check": "^1.0.3",
     "libsodium-wrappers": "^0.2.4",
     "randombytes": "^2.0.1",
-    "sodium": "^1.0.13"
+    "sodium": "git://github.com/GemHQ/node-sodium"
   },
   "browser": {
     "./lib/crypto/passphrase_box.js": "./lib/crypto/passphrase_box_browser.js"
