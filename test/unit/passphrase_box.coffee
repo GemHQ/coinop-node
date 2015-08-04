@@ -29,6 +29,7 @@ describe 'encrypt keys', ->
 
 
 describe 'full-circle encryption/decryption', ->
+  @timeout(3000)
   it 'should decreypt the encrypted', (done) ->
     testAll = (aesData, i, error) ->
       len = aesData.length
