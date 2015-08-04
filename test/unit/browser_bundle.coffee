@@ -9,5 +9,5 @@
 # PassphraseBox has a browser version because it can't use
 # node-sodium, instead it uses libsodium.js and therefor
 # had to be rewritten
-PassphraseBoxTest = require('./passphrase_box_browser')
+PassphraseBoxTest = require('./passphrase_box')
 # MultiWallet = require('./multiwallet')

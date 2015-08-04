@@ -20,9 +20,6 @@
     "randombytes": "^2.0.1",
     "sodium": "git://github.com/GemHQ/node-sodium"
   },
-  "browser": {
-    "./lib/crypto/passphrase_box.js": "./lib/crypto/passphrase_box_browser.js"
-  },
   "devDependencies": {
     "browserify": "^9.0.3",
     "chai": "^1.10.0",

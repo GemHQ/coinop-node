@@ -3,7 +3,8 @@ var gulp = require('gulp'),
     browserify = require('browserify'),
     watchify = require('watchify'),
     source = require('vinyl-source-stream'),
-    open = require('gulp-open');
+    open = require('gulp-open'),
+    exit = require('gulp-exit');
 
 
 // JS
@@ -21,7 +22,7 @@ function bundle() {
   return bundler.bundle()
     .on('error', function(error) {
       console.log(error);
-      this.end();
+      exit();
     })
     .pipe(source('browser_bundle.js'))
     .pipe(gulp.dest('./lib/test/unit'))
