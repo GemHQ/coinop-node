@@ -7,16 +7,14 @@ module.exports = class PassphraseBox
 
   @encrypt: (passphrase, plaintext, callback) ->
     new @({passphrase}, (error, box) ->
-      return callback(error) if error
-      callback(null, box.encrypt(plaintext))
+      callback(error, box.encrypt(plaintext))
     )
 
 
   @decrypt: (passphrase, encrypted, callback) ->
     {salt, iterations, iv, ciphertext} = encrypted
     new @({passphrase, salt, iterations}, (error, box) ->
-      return callback(error) if error
-      callback(null, box.decrypt(ciphertext, iv))
+      callback(error, box.decrypt(ciphertext, iv))
     )
 
 
@@ -34,8 +32,8 @@ module.exports = class PassphraseBox
     pbkdf2(passphrase, @salt, @iterations, 64, (error, buffer) =>
       return callback(error) if error
 
-      @aes_key = buffer.slice(0,32)
-      @hmac_key = buffer.slice(32,64)
+      @aes_key = new Buffer(new Uint8Array(buffer.slice(0,32)))
+      @hmac_key = new Buffer(new Uint8Array(buffer.slice(32,64)))
       callback(null, @)
     )
 
@@ -88,3 +86,4 @@ module.exports = class PassphraseBox
     aes.setAutoPadding(false)
     decrypted = aes.update(ciphertext, 'hex', 'utf8')
     decrypted += aes.final('utf8')
+
