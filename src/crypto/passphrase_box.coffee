@@ -7,14 +7,16 @@ module.exports = class PassphraseBox
 
   @encrypt: (passphrase, plaintext, callback) ->
     new @({passphrase}, (error, box) ->
-      callback(error, box.encrypt(plaintext))
+      return callback(error) if error
+      callback(null, box.encrypt(plaintext))
     )
 
 
   @decrypt: (passphrase, encrypted, callback) ->
     {salt, iterations, iv, ciphertext} = encrypted
     new @({passphrase, salt, iterations}, (error, box) ->
-      callback(error, box.decrypt(ciphertext, iv))
+      return callback(error) if error
+      callback(null, box.decrypt(ciphertext, iv))
     )
 
 
