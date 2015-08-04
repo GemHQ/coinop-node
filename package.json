@@ -16,9 +16,7 @@
     "bitcoinjs-lib": "1.4.1",
     "bs58": "^2.0.1",
     "bs58check": "^1.0.3",
-    "libsodium-wrappers": "^0.2.4",
-    "randombytes": "^2.0.1",
-    "sodium": "git://github.com/GemHQ/node-sodium"
+    "randombytes": "^2.0.1"
   },
   "devDependencies": {
     "browserify": "^9.0.3",
