@@ -32,13 +32,13 @@ module.exports = class PassphraseBox
     pbkdf2(passphrase, @salt, @iterations, 64, (error, buffer) =>
       return callback(error) if error
 
-      @aes_key = buffer.slice(0,32)
-      @hmac_key = buffer.slice(32,64)
+      @aes_key = new Buffer(new Uint8Array(buffer.slice(0,32)))
+      @hmac_key = new Buffer(new Uint8Array(buffer.slice(32,64)))
       callback(null, @)
     )
 
 
-  encrypt: (plaintext, iv) ->
+  encrypt: (plaintext, iv, callback) ->
     try
       iv ?= crypto.randomBytes(16)
     catch
@@ -86,3 +86,4 @@ module.exports = class PassphraseBox
     aes.setAutoPadding(false)
     decrypted = aes.update(ciphertext, 'hex', 'utf8')
     decrypted += aes.final('utf8')
+
