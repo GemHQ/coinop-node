@@ -1,6 +1,6 @@
 {
   "name": "coinop-node",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Crypto currency conveniences",
   "repository": {
     "type": "git",
@@ -17,9 +17,6 @@
     "bs58": "^2.0.1",
     "bs58check": "^1.0.3",
     "randombytes": "^2.0.1"
-  },
-  "browser": {
-    "./lib/crypto/passphrase_box.js": "./lib/crypto/passphrase_box_browser.js"
   },
   "devDependencies": {
     "browserify": "^9.0.3",
