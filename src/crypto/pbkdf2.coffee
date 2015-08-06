@@ -2,11 +2,11 @@ cryptoJS = require 'crypto'
 
 browserNativePbkdf2 = ->
   try
-    return false unless window.crypto
-    return false if window.crypto.webkitSubtle
+    return false unless global.crypto
+    return false if global.crypto.webkitSubtle
 
     buffer = new Buffer('data', 'binary')
-    window.crypto?.subtle?.importKey 'raw', buffer, {name: 'PBKDF2'}, false, ['deriveBits']
+    global.crypto?.subtle?.importKey 'raw', buffer, {name: 'PBKDF2'}, false, ['deriveBits']
     return true
   catch error
     console.error error
@@ -16,9 +16,9 @@ jsPBKDF2 = cryptoJS.pbkdf2
 
 nativePBKDF2 = (passphrase, salt, iterations, keySize, callback) ->
   keyBuffer = new Buffer(passphrase, 'binary')
-  window.crypto.subtle.importKey('raw', keyBuffer, {name: 'PBKDF2'}, false, ['deriveBits'])
+  global.crypto.subtle.importKey('raw', keyBuffer, {name: 'PBKDF2'}, false, ['deriveBits'])
     .then (key) ->
-      window.crypto.subtle.deriveBits({
+      global.crypto.subtle.deriveBits({
         name: 'PBKDF2',
         salt: salt,
         iterations: iterations,
