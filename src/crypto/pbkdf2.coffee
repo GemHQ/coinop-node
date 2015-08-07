@@ -2,7 +2,7 @@ cryptoJS = require 'crypto'
 
 browserNativePbkdf2 = ->
   try
-    return false unless global.crypto
+    return false unless global.crypto.subtle
     return false if global.crypto.webkitSubtle
 
     buffer = new Buffer('data', 'binary')
