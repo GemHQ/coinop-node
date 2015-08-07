@@ -130,7 +130,7 @@ describe 'MultiWallet', ->
 
         inputs.forEach (input, i) ->
           scriptFromResource = input.output.script.string
-          scriptFromTX = txb.prevOutScripts[i.toString()]
+          scriptFromTX = txb.inputs[i].prevOutScript
 
           expect(scriptFromResource).to.equal(scriptFromTX.toASM())
 
@@ -250,7 +250,9 @@ describe 'MultiWallet', ->
         redeemScript = multiwallet.createRedeemScript(pubKeys)
 
         txb.sign(0, privKey, redeemScript)
-        signature = txb.signatures[0].signatures[0]
+        # bitcoinjs knows that we have a 2/3 signing scheme, so it populates 2 slots
+        # in the signatures array with undefined.
+        signature = txb.inputs[0].signatures.filter((sig) -> sig != undefined)[0]
 
         encodedSignature = bs58.encode signature.toScriptSignature(1)
         encodedSig = "AMyJVscvLDwcScwSbagcR4KbAnHMS6enLgpaKwhm6hcX63vNaT3tnudXPwos5bwZ4w6yB4xTAWhZANjL9AJZXikJNZcLAuQik"
@@ -298,7 +300,9 @@ describe 'MultiWallet', ->
 
 
       it "should properly encode a signature", ->
-        signature = txb.signatures[0].signatures[0]
+        # bitcoinjs knows that we have a 2/3 signing scheme, so it populates 2 slots
+        # in the signatures array with undefined.
+        signature = txb.inputs[0].signatures.filter((sig) -> sig != undefined)[0]
         encodedSignature = multiwallet.encodeSignature(signature)
         encodedSig = "AMyJVscvLDwcScwSbagcR4KbAnHMS6enLgpaKwhm6hcX63vNaT3tnudXPwos5bwZ4w6yB4xTAWhZANjL9AJZXikJNZcLAuQik"
 
