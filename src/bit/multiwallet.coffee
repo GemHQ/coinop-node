@@ -158,7 +158,7 @@ module.exports = class MultiWallet
   # returns an array of bae58-encoded signatures
   signAllInputs: (paths, txb) ->
     signatures = []
-    inputs = txb.tx.ins
+    {inputs} = txb
 
     inputs.forEach (input, index) =>
       path = paths[index]
@@ -167,7 +167,11 @@ module.exports = class MultiWallet
       redeemScript = @createRedeemScript(pubKeys)
 
       txb.sign(index, privKey, redeemScript)
-      signature = txb.signatures[index].signatures[0]
+      # bitcoinjs knows that we have a 2/3 signing scheme, so it populates 2 slots
+      # in the signatures array with undefined.
+      signature = txb.inputs[index].signatures.filter((sig) ->
+        sig != undefined
+      )[0]
       signatures.push(signature)
 
     return signatures

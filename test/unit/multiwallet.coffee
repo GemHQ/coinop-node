@@ -7,7 +7,7 @@ MultiWallet = require '../../src/bit/multiwallet'
 txUtils = require '../../src/bit/transaction_utils'
 
 transaction_data = require '../data/transaction.json'
-{base58_seeds} = transaction_data
+{seeds, base58_pub} = transaction_data
 {payment_resource} = transaction_data
 
 expect = require('chai').expect
@@ -47,11 +47,11 @@ describe 'MultiWallet', ->
     before () ->
       multiwallet = new MultiWallet {
         private: {
-          primary: base58_seeds.primary
+          primary: seeds.primary
         }
         public: {
-          backup: base58_seeds.backup
-          cosigner: base58_seeds.cosigner
+          backup: base58_pub.backup
+          cosigner: base58_pub.cosigner
         }
       }
 
@@ -77,10 +77,10 @@ describe 'MultiWallet', ->
       expect(createMultiWallet).to.throw(Error)
 
 
-    it 'should not throw an error if no public seeds are provided', ->
+    it 'should not throw an error if public seeds are NOT provided', ->
       createMultiWallet = -> new MultiWallet ({
         private: {
-          primary: base58_seeds.primary
+          primary: seeds.primary
         }
       })
       expect(createMultiWallet).to.not.throw(Error)
@@ -93,11 +93,11 @@ describe 'MultiWallet', ->
     beforeEach () ->
       multiwallet = new MultiWallet {
         private: {
-          primary: base58_seeds.primary
+          primary: seeds.primary
         }
         public: {
-          backup: base58_seeds.backup
-          cosigner: base58_seeds.cosigner
+          backup: base58_pub.backup,
+          cosigner: base58_pub.cosigner
         }
       }
 
@@ -130,7 +130,7 @@ describe 'MultiWallet', ->
 
         inputs.forEach (input, i) ->
           scriptFromResource = input.output.script.string
-          scriptFromTX = txb.prevOutScripts[i.toString()]
+          scriptFromTX = txb.inputs[i].prevOutScript
 
           expect(scriptFromResource).to.equal(scriptFromTX.toASM())
 
@@ -171,8 +171,10 @@ describe 'MultiWallet', ->
     describe "deriveNodeForPath", ->
 
       it 'should derive the correct child node', ->
-        path = [44,1,0,0,0]
-        derived_primary_seed = transaction_data.base58_derived_seeds.primary
+        derived_primary_seed = transaction_data.base58_derived.primary
+        
+        {inputs} = payment_resource
+        path = txUtils.getPathsForInputs(inputs)[0]
         primaryMasterNode = multiwallet.trees.primary
         derivedPrimaryNode = multiwallet.deriveNodeForPath(primaryMasterNode, path)
         derivedPrimarySeed = derivedPrimaryNode.toBase58()
@@ -185,7 +187,10 @@ describe 'MultiWallet', ->
       it "should derive the correct pubKeys for a given path", ->
         {derived_pubkeys_hex} = transaction_data
         {backup, cosigner, primary} = derived_pubkeys_hex
-        derivedpubKeys = multiwallet.getPubKeysForPath([44,1,0,0,0])
+
+        {inputs} = payment_resource
+        path = txUtils.getPathsForInputs(inputs)[0]
+        derivedpubKeys = multiwallet.getPubKeysForPath(path)
         derivedpubKeysHex = derivedpubKeys.map (node) -> node.toHex()
 
         expect([backup, cosigner, primary]).to.deep.equal(derivedpubKeysHex)
@@ -194,9 +199,12 @@ describe 'MultiWallet', ->
     describe "getPrivKeyForPath", ->
 
       it "should derive the correct privkey for a given path", ->
-        privKey = multiwallet.getPrivKeyForPath([44,1,0,0,0])
-        WIF = privKey.toWIF()
         {primary_WIF} = transaction_data
+
+        {inputs} = payment_resource
+        path = txUtils.getPathsForInputs(inputs)[0]
+        privKey = multiwallet.getPrivKeyForPath(path)
+        WIF = privKey.toWIF()
 
         expect(WIF).to.equal(primary_WIF)
         
@@ -205,7 +213,10 @@ describe 'MultiWallet', ->
 
       it "should contain hex of all provided pubkeys", ->
         {derived_pubkeys_hex} = transaction_data
-        pubKeys = multiwallet.getPubKeysForPath([44,1,0,0,0])
+
+        {inputs} = payment_resource
+        path = txUtils.getPathsForInputs(inputs)[0]
+        pubKeys = multiwallet.getPubKeysForPath(path)
         redeemScript = multiwallet.createRedeemScript(pubKeys)
           .toASM()
 
@@ -214,12 +225,13 @@ describe 'MultiWallet', ->
 
 
       it "should contain OP_CHECKMULTISIG", ->
-        pubKeys = multiwallet.getPubKeysForPath([44,1,0,0,0])
+        {inputs} = payment_resource
+        path = txUtils.getPathsForInputs(inputs)[0]
+        pubKeys = multiwallet.getPubKeysForPath(path)
         redeemScript = multiwallet.createRedeemScript(pubKeys)
           .toASM()
         
         expect(redeemScript).to.contain("OP_CHECKMULTISIG")
-
 
 
     describe "payment.sign", ->
@@ -231,17 +243,19 @@ describe 'MultiWallet', ->
         multiwallet.addInputs(inputs, txb)
         multiwallet.addOutputs(outputs, txb)
         
-        path = txUtils.getPathForInput(payment_resource ,0)
+        path = txUtils.getPathForInput(payment_resource, 0)
         
         pubKeys = multiwallet.getPubKeysForPath(path)
         privKey = multiwallet.getPrivKeyForPath(path)
         redeemScript = multiwallet.createRedeemScript(pubKeys)
 
         txb.sign(0, privKey, redeemScript)
-        signature = txb.signatures[0].signatures[0]
+        # bitcoinjs knows that we have a 2/3 signing scheme, so it populates 2 slots
+        # in the signatures array with undefined.
+        signature = txb.inputs[0].signatures.filter((sig) -> sig != undefined)[0]
 
         encodedSignature = bs58.encode signature.toScriptSignature(1)
-        encodedSig = "iKkkiYrAqRKBWUpyCH2qWrnZ8VvJ2eQodjWhnvq1ScdxyAMLE5j9tVcw7BQg1Qr2M2BiLtqegtdxd9YP3tVaC4WzWNnzpPP4ak"
+        encodedSig = "AMyJVscvLDwcScwSbagcR4KbAnHMS6enLgpaKwhm6hcX63vNaT3tnudXPwos5bwZ4w6yB4xTAWhZANjL9AJZXikJNZcLAuQik"
         
         expect(encodedSignature).to.equal(encodedSig)
 
@@ -286,9 +300,11 @@ describe 'MultiWallet', ->
 
 
       it "should properly encode a signature", ->
-        signature = txb.signatures[0].signatures[0]
+        # bitcoinjs knows that we have a 2/3 signing scheme, so it populates 2 slots
+        # in the signatures array with undefined.
+        signature = txb.inputs[0].signatures.filter((sig) -> sig != undefined)[0]
         encodedSignature = multiwallet.encodeSignature(signature)
-        encodedSig = "iKkkiYrAqRKBWUpyCH2qWrnZ8VvJ2eQodjWhnvq1ScdxyAMLE5j9tVcw7BQg1Qr2M2BiLtqegtdxd9YP3tVaC4WzWNnzpPP4ak"
+        encodedSig = "AMyJVscvLDwcScwSbagcR4KbAnHMS6enLgpaKwhm6hcX63vNaT3tnudXPwos5bwZ4w6yB4xTAWhZANjL9AJZXikJNZcLAuQik"
 
         expect(encodedSignature).to.equal(encodedSig)
 
@@ -310,7 +326,7 @@ describe 'MultiWallet', ->
 
       it "return an array of encoded signatures", ->
         encodedSignatures = multiwallet.encodeSignatures(signatures)
-        encodedSig = "iKkkiYrAqRKBWUpyCH2qWrnZ8VvJ2eQodjWhnvq1ScdxyAMLE5j9tVcw7BQg1Qr2M2BiLtqegtdxd9YP3tVaC4WzWNnzpPP4ak"
+        encodedSig = "AMyJVscvLDwcScwSbagcR4KbAnHMS6enLgpaKwhm6hcX63vNaT3tnudXPwos5bwZ4w6yB4xTAWhZANjL9AJZXikJNZcLAuQik"
 
         expect(encodedSignatures).to.deep.equal([encodedSig])
 
@@ -319,6 +335,7 @@ describe 'MultiWallet', ->
 
       it 'return an array of encoded signatures', ->
         {signatures} = multiwallet.prepareTransaction(payment_resource)
-        encodedSig = "iKkkiYrAqRKBWUpyCH2qWrnZ8VvJ2eQodjWhnvq1ScdxyAMLE5j9tVcw7BQg1Qr2M2BiLtqegtdxd9YP3tVaC4WzWNnzpPP4ak"
+        encodedSig = "AMyJVscvLDwcScwSbagcR4KbAnHMS6enLgpaKwhm6hcX63vNaT3tnudXPwos5bwZ4w6yB4xTAWhZANjL9AJZXikJNZcLAuQik"
 
         expect(signatures).to.deep.equal([encodedSig])
+
