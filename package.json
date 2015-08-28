@@ -1,12 +1,12 @@
 {
-  "name": "coinop",
+  "name": "coinop-node",
   "version": "0.1.0",
   "description": "Crypto currency conveniences",
   "repository": {
     "type": "git",
     "url": "git@github.com:GemHQ/coinop-node.git"
   },
-  "main": "src/index.coffee",
+  "main": "lib/index.js",
   "scripts": {
     "preinstall": "sudo npm install -g node-gyp",
     "test": "echo \"Error: no test specified\" && exit 1"
