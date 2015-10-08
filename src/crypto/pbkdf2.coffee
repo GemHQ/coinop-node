@@ -23,7 +23,7 @@ nativePBKDF2 = (passphrase, salt, iterations, keySize, callback) ->
         salt: salt,
         iterations: iterations,
         hash: {name: 'SHA-1'}
-      }, key, 512)
+      }, key, keySize * 8)
         .then (key) ->
           callback(null, key)
         .catch (error) ->
