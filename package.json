@@ -1,6 +1,6 @@
 {
   "name": "coinop-node",
-  "version": "0.2.6",
+  "version": "0.3.0",
   "description": "Crypto currency conveniences",
   "repository": {
     "type": "git",

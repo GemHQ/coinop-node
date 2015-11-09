@@ -21,8 +21,9 @@ describe 'encrypt', ->
 
 describe 'encrypt keys', ->
   it 'should return an object containing ciphertext, salt, iv, and iterations', (done) ->
-    data = aesData[1]
-    PassphraseBox.encrypt data.passphrase, data.plaintext, (error, encryptedData) ->
+    { passphrase, plaintext } = aesData[1]
+
+    PassphraseBox.encrypt {passphrase, plaintext}, (error, encryptedData) ->
       expect(encryptedData).to.include.keys('iterations', 'salt',
                                             'iv', 'ciphertext')
       done(error)
@@ -30,17 +31,17 @@ describe 'encrypt keys', ->
 
 describe 'full-circle encryption/decryption', ->
   @timeout(3000)
-  it 'should decreypt the encrypted', (done) ->
+  it 'should decrypt the encrypted', (done) ->
     testAll = (aesData, i, error) ->
       len = aesData.length
       if i == len or error?
         return done(error)
       else
-        data = aesData[i]
-        PassphraseBox.encrypt(data.passphrase, data.plaintext, (error, encrypted) ->
+        { passphrase, plaintext } = aesData[i]
+        PassphraseBox.encrypt({passphrase, plaintext}, (error, encrypted) ->
           testAll(aesData, i+1, error) if error
-          PassphraseBox.decrypt(data.passphrase, encrypted, (error, plaintext) ->
-            expect(plaintext).to.equal(data.plaintext)
+          PassphraseBox.decrypt({passphrase, encrypted}, (error, plaintext) ->
+            expect(plaintext).to.equal(plaintext)
             testAll(aesData, i+1, error)
           )
         )

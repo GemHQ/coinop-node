@@ -5,14 +5,14 @@ module.exports = class PassphraseBox
 
   ITERATIONS = 100000
 
-  @encrypt: (passphrase, plaintext, callback) ->
-    new @({passphrase}, (error, box) ->
+  @encrypt: ({passphrase, plaintext, salt, iterations}, callback) ->
+    new @({passphrase, salt, iterations}, (error, box) ->
       return callback(error) if error
       callback(null, box.encrypt(plaintext))
     )
 
 
-  @decrypt: (passphrase, encrypted, callback) ->
+  @decrypt: ({passphrase, encrypted}, callback) ->
     {salt, iterations, iv, ciphertext} = encrypted
     new @({passphrase, salt, iterations}, (error, box) ->
       return callback(error) if error
