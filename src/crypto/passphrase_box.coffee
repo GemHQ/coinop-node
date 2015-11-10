@@ -22,7 +22,7 @@ module.exports = class PassphraseBox
 
   constructor: ({passphrase, salt, @iterations}, callback) ->
     if salt
-      @salt = new Buffer(salt, "hex")
+      @salt = if Buffer.isBuffer(salt) then salt else new Buffer(salt, "hex")
     else
       try
         @salt = crypto.randomBytes(16)
